@@ -3,23 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <title>Seviye 1 - Başlangıç</title>
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WSPGL01JPZ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WSPGL01JPZ');
+    </script>
+
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "uakhzvo75x");
+    </script>
+
+    <script async data-id="101496850" src="//static.getclicky.com/js"></script>
+
     <style>
-        body { background-color: #111; color: #0f0; font-family: 'Courier New', monospace; text-align: center; margin-top: 100px; }
-        h1 { border-bottom: 2px solid #0f0; display: inline-block; }
-        .ipucu { font-size: 1.5rem; margin-top: 30px; color: white; }
-        .not { color: #888; font-size: 0.9rem; margin-top: 50px; }
+        /* Sayfa yapısı ve kaydırma çubuklarını gizleme */
+        body { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; /* Yanlardan taşmayı engeller */
+            background-color: #000; 
+            font-family: 'Courier New', monospace; 
+        }
+
+        /* Matrix Arka Planı (En arkada duracak) */
+        canvas { 
+            display: block; 
+            position: fixed; /* Ekrana sabitler */
+            top: 0; 
+            left: 0; 
+            z-index: -1; /* Yazıların arkasına atar */
+        }
+
+        /* Sitenin İçeriği (Önde duracak) */
+        #icerik-kutusu {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Tam ortalar */
+            text-align: center;
+            color: #0f0; /* Yeşil yazı */
+            z-index: 1; /* Arka planın önünde durması için */
+            
+            /* Yazıların okunması için arkaya hafif siyahlık */
+            background-color: rgba(0, 0, 0, 0.7); 
+            padding: 40px;
+            border: 1px solid #0f0;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        h1 { border-bottom: 2px solid #0f0; display: inline-block; margin-bottom: 20px;}
+        .ipucu { font-size: 1.5rem; color: white; margin-bottom: 30px; }
+        .not { color: #aaa; font-size: 0.9rem; margin-top: 30px; }
+        .not b { color: #fff; }
     </style>
 </head>
 <body>
-    <h1>SEVİYE 1</h1>
-    <p class="ipucu">"Geceleri ortaya çıkarım, ama ışığım kendimden değildir.<br>Güneş yoksa ben varım. Ben neyim?"</p>
-    
-    <div class="not">
-        <p>⚠️ NASIL OYNANIR?</p>
-        <p>Cevabı buldun mu? Yukarıdaki adres çubuğuna bak.</p>
-        <p>Orada <b>.../index.html</b> yazıyor.</p>
-        <p>Onu sil ve yerine <b>.../cevap.html</b> yazıp Enter'a bas.</p>
-        <p>(Örnek: Cevap "elma" ise <b>elma.html</b> yaz)</p>
+
+    <canvas id="matrix"></canvas>
+
+    <div id="icerik-kutusu">
+        <h1>SEVİYE 1</h1>
+        <p class="ipucu">"Geceleri ortaya çıkarım, ama ışığım kendimden değildir.<br>Güneş yoksa ben varım. Ben neyim?"</p>
+        
+        <div class="not">
+            <p>⚠️ SİSTEME NASIL SIZILIR?</p>
+            <p>Bu bir URL bulmacasıdır.</p>
+            <p>Cevabı buldun mu?</p>
+            <p>Adres çubuğundaki linkin sonuna <b>cevabı</b> ekle ve Git'e bas.</p>
+            <p>(Örnek: Site adresi <b>.../erhanky.xyz</b> ise ve cevap <b>elma</b> ise,</p>
+            <p>Adresi <b>erhanky.xyz/elma</b> yapmalısın.)</p>
+        </div>
     </div>
+
+    <script>
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        // Ekranı tam kapla
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Matrix karakterleri (Katakana ve Latin harfleri)
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリグズブヅプウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const letters = katakana.split('');
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize; // Kaç sütun olacağını hesapla
+
+        const drops = [];
+        // Her sütun için başlangıç noktası ata (hepsi yukarıdan başlar)
+        for (let i = 0; i < columns; i++) {
+            drops[i] = 1;
+        }
+
+        function draw() {
+            // Arka planı hafifçe karart (iz bırakma efekti için opacity 0.05)
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0'; // Kodların rengi (Yeşil)
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = letters[Math.floor(Math.random() * letters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // Ekranın altına geldiyse ve rastgele bir ihtimalle başa dön
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        // Animasyonu başlat (33 milisaniyede bir kare)
+        setInterval(draw, 33);
+
+        // Ekran boyutu değişirse (telefonda yan çevirme vb.) tuvali yenile
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+
 </body>
 </html>
